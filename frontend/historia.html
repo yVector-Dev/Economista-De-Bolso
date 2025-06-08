@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finanças em Tempo Real</title>
+  <!-- Flag icons CSS via unpkg CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/flag-icon-css@6.6.6/css/flag-icon.min.css" />
+  <style>
+    :root {
+      --primary: #1f2937;
+      --secondary: #111827;
+      --accent: #3b82f6;
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background-color: var(--primary);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: white;
+      font-size: 1.8rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: var(--accent);
+    }
+    main {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    .card h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input, select {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      outline: none;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--secondary);
+      color: #cbd5e1;
+      margin-top: 50px;
+    }
+    /* Estilo para a área da história com bandeiras */
+    #historiaMoeda {
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .flag-icon {
+      margin-right: 8px;
+      vertical-align: middle;
+      border-radius: 3px;
+    }
+    strong {
+      font-weight: 700;
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Finanças em Tempo Real</h1>
+    <nav>
+      <a href="acoes.html">Ações EUA</a>
+      <a href="historia.html">História Das Moedas</a> 
+    </nav>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Cotação do Dólar em Tempo Real</h2>
+      <div id="cotacaoDolar">Carregando...</div>
+    </div>
+
+    <div class="card">
+      <h2>Conversor de Moedas</h2>
+      <label for="valor">Valor:</label>
+      <input type="number" id="valor" placeholder="Digite o valor" />
+
+      <label for="tarifa">Tarifa (% opcional):</label>
+      <input type="number" id="tarifa" placeholder="Ex.: 2"/>
+
+      <label for="de">De:</label>
+      <select id="de">
+        <optgroup label="América">
+          <option value="USD">Dólar Americano (USD)</option>
+          <option value="BRL">Real Brasileiro (BRL)</option>
+          <option value="MXN">Peso Mexicano (MXN)</option>
+          <option value="CAD">Dólar Canadense (CAD)</option>
+          <option value="ARS">Peso Argentino (ARS)</option>
+          <option value="COP">Peso Colombiano (COP)</option>
+          <option value="CLP">Peso Chileno (CLP)</option>
+          <option value="PEN">Sol Peruano (PEN)</option>
+        </optgroup>
+        <optgroup label="Europa">
+          <option value="EUR">Euro (EUR)</option>
+          <option value="GBP">Libra Esterlina (GBP)</option>
+          <option value="CHF">Franco Suíço (CHF)</option>
+          <option value="SEK">Coroa Sueca (SEK)</option>
+          <option value="NOK">Coroa Norueguesa (NOK)</option>
+          <option value="DKK">Coroa Dinamarquesa (DKK)</option>
+        </optgroup>
+        <optgroup label="Ásia">
+          <option value="JPY">Iene Japonês (JPY)</option>
+          <option value="CNY">Yuan Chinês (CNY)</option>
+          <option value="INR">Rupia Indiana (INR)</option>
+          <option value="KRW">Won Sul-Coreano (KRW)</option>
+          <option value="SGD">Dólar de Singapura (SGD)</option>
+          <option value="HKD">Dólar de Hong Kong (HKD)</option>
+        </optgroup>
+        <optgroup label="Oceania">
+          <option value="AUD">Dólar Australiano (AUD)</option>
+          <option value="NZD">Dólar Neozelandês (NZD)</option>
+        </optgroup>
+        <optgroup label="África">
+          <option value="ZAR">Rand Sul-Africano (ZAR)</option>
+          <option value="EGP">Libra Egípcia (EGP)</option>
+          <option value="NGN">Naira Nigeriana (NGN)</option>
+        </optgroup>
+      </select>
+
+      <label for="para">Para:</label>
+      <select id="para" onchange="atualizarHistoriaMoeda()">
+        <optgroup label="América">
+          <option value="USD">Dólar Americano (USD)</option>
+          <option value="BRL">Real Brasileiro (BRL)</option>
+          <option value="MXN">Peso Mexicano (MXN)</option>
+          <option value="CAD">Dólar Canadense (CAD)</option>
+          <option value="ARS">Peso Argentino (ARS)</option>
+          <option value="COP">Peso Colombiano (COP)</option>
+          <option value="CLP">Peso Chileno (CLP)</option>
+          <option value="PEN">Sol Peruano (PEN)</option>
+        </optgroup>
+        <optgroup label="Europa">
+          <option value="EUR">Euro (EUR)</option>
+          <option value="GBP">Libra Esterlina (GBP)</option>
+          <option value="CHF">Franco Suíço (CHF)</option>
+          <option value="SEK">Coroa Sueca (SEK)</option>
+          <option value="NOK">Coroa Norueguesa (NOK)</option>
+          <option value="DKK">Coroa Dinamarquesa (DKK)</option>
+        </optgroup>
+        <optgroup label="Ásia">
+          <option value="JPY">Iene Japonês (JPY)</option>
+          <option value="CNY">Yuan Chinês (CNY)</option>
+          <option value="INR">Rupia Indiana (INR)</option>
+          <option value="KRW">Won Sul-Coreano (KRW)</option>
+          <option value="SGD">Dólar de Singapura (SGD)</option>
+          <option value="HKD">Dólar de Hong Kong (HKD)</option>
+        </optgroup>
+        <optgroup label="Oceania">
+          <option value="AUD">Dólar Australiano (AUD)</option>
+          <option value="NZD">Dólar Neozelandês (NZD)</option>
+        </optgroup>
+        <optgroup label="África">
+          <option value="ZAR">Rand Sul-Africano (ZAR)</option>
+          <option value="EGP">Libra Egípcia (EGP)</option>
+          <option value="NGN">Naira Nigeriana (NGN)</option>
+        </optgroup>
+      </select>
+
+      <button onclick="converter()">Converter</button>
+      <div class="result" id="resultadoConversao"></div>
+    </div>
+
+    <div class="card">
+      <h2>História da Moeda</h2>
+      <div id="historiaMoeda">Selecione uma moeda para ver sua história.</div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 Finanças em Tempo Real. Todos os direitos reservados.
+  </footer>
+
+  <script>
+    const historias = {
+      USD: {
+        texto: "O Dólar Americano (USD) foi criado em 1792 e se tornou a principal moeda do mundo.",
+        bandeira: "us"
+      },
+      BRL: {
+        texto: "O Real (BRL) surgiu em 1994 com o Plano Real no Brasil para conter a inflação.",
+        bandeira: "br"
+      },
+      EUR: {
+        texto: "O Euro (EUR) foi criado em 1999 como moeda comum da União Europeia.",
+        bandeira: "eu"
+      },
+      GBP: {
+        texto: "A Libra Esterlina (GBP) é uma das moedas mais antigas ainda em uso, desde o século VIII.",
+        bandeira: "gb"
+      },
+      JPY: {
+        texto: "O Iene Japonês (JPY) foi oficialmente adotado em 1871.",
+        bandeira: "jp"
+      },
+      CAD: {
+        texto: "O Dólar Canadense (CAD) é a moeda oficial do Canadá desde 1858.",
+        bandeira: "ca"
+      },
+      AUD: {
+        texto: "O Dólar Australiano (AUD) é usado na Austrália desde 1966.",
+        bandeira: "au"
+      }
+      // Adicione outras moedas se quiser
+    };
+
+    function atualizarHistoriaMoeda() {
+      const select = document.getElementById('para');
+      const moeda = select.value;
+      const historia = historias[moeda];
+      const divHistoria = document.getElementById('historiaMoeda');
+
+      if (historia) {
+        divHistoria.innerHTML = `<span class="flag-icon flag-icon-${historia.bandeira}"></span> ${historia.texto}`;
+      } else {
+        divHistoria.textContent = "História da moeda não disponível.";
+      }
+    }
+
+    // Atualiza a história ao carregar
+    window.onload = function() {
+      atualizarHistoriaMoeda();
+      fetchCotacaoDolar();
+    };
+
+    function converter() {
+      const valor = parseFloat(document.getElementById('valor').value);
+      const tarifa = parseFloat(document.getElementById('tarifa').value) || 0;
+      const de = document.getElementById('de').value;
+      const para = document.getElementById('para').value;
+
+      if (isNaN(valor)) {
+        alert('Digite um valor válido');
+        return;
+      }
+      if (de === para) {
+        alert('Escolha moedas diferentes para converter');
+        return;
+      }
+
+      // Aqui você precisa de uma API real para taxa de câmbio.
+      // Vou simular com valores fixos para exemplo.
+      const taxas = {
+        "USD": 1,
+        "BRL": 5,
+        "EUR": 0.9,
+        "GBP": 0.8,
+        "JPY": 135,
+        "CAD": 1.3,
+        "AUD": 1.4
+      };
+
+      if (!(de in taxas) || !(para in taxas)) {
+        alert('Conversão não suportada para essas moedas');
+        return;
+      }
+
+      // Converte o valor para USD primeiro, depois para moeda final
+      let valorEmUSD = valor / taxas[de];
+      let valorConvertido = valorEmUSD * taxas[para];
+
+      // Aplica tarifa
+      valorConvertido = valorConvertido * (1 - tarifa / 100);
+
+      document.getElementById('resultadoConversao').textContent = 
+        `${valor.toFixed(2)} ${de} = ${valorConvertido.toFixed(2)} ${para} (com ${tarifa}% tarifa)`;
+    }
+
+    function fetchCotacaoDolar() {
+      // Exemplo fake - substitua pela API real depois
+      document.getElementById('cotacaoDolar').textContent = "R$ 5,00 (simulado)";
+    }
+  </script>
+
+</body>
+</html>

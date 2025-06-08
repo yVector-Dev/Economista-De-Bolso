@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Aposentadoria</title>
+  <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --primary: #1f2937;
+      --secondary: #111827;
+      --accent: #3b82f6;
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background-color: var(--primary);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: white;
+      font-size: 1.8rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: var(--accent);
+    }
+    main {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    .card h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input,
+    select {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      outline: none;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--primary);
+      line-height: 1.6;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--secondary);
+      color: #cbd5e1;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Economista de Bolso</h1>
+    <nav>
+      <a href="acoes.html">Ações EUA</a>
+      <a href="cript.html">Cripto</a>
+      <a href="juros.html">Calculadora de Juros Compostos</a>
+      <a href="index.html">Conversor</a>
+      <a href="parecelas.html">Calculadora de parcelas</a>
+      <a href="rendafixa.html">Renda fixa</a>
+      <a href="https://economistadebolso.blogspot.com/">Nosso Blog</a>
+    </nav>
+  </header>
+  <main>
+    <div class="card">
+      <h2>Simule sua aposentadoria</h2>
+      <label for="valorInicial">Valor Inicial Investido (R$):</label>
+      <input type="number" id="valorInicial" placeholder="Ex.: 10000" step="any" />
+      
+      <label for="aporteMensal">Aporte Mensal (R$):</label>
+      <input type="number" id="aporteMensal" placeholder="Ex.: 500" step="any" />
+      
+      <label for="anos">Tempo até aposentadoria (anos):</label>
+      <input type="number" id="anos" placeholder="Ex.: 30" />
+      
+      <label for="taxaAnual">Taxa de rendimento anual (%):</label>
+      <input type="number" id="taxaAnual" placeholder="Ex.: 8" step="any" />
+      
+      <button onclick="calcularAposentadoria()">Calcular</button>
+      
+      <div class="result" id="resultado"></div>
+    </div>
+
+      <div class="card">
+      <p><strong>Os dados apresentados são apenas estimativas, não nos responsabilizamos por alterações ou por taixas não informadas. </strong>
+        <br>Verifique os contratos com sua corretora ou banco.</p>
+    </div>
+  </main>
+  <footer>
+    © 2025 Economista de Bolso - Todos os direitos reservados.
+  </footer>
+
+  <script>
+    function calcularAposentadoria() {
+      const P = parseFloat(document.getElementById('valorInicial').value) || 0;
+      const PMT = parseFloat(document.getElementById('aporteMensal').value) || 0;
+      const anos = parseInt(document.getElementById('anos').value) || 0;
+      const taxaAnual = (parseFloat(document.getElementById('taxaAnual').value) || 0) / 100;
+
+      const meses = anos * 12;
+      const taxaMensal = Math.pow(1 + taxaAnual, 1 / 12) - 1;
+
+      // Fórmula do montante com juros compostos e aportes mensais:
+      // M = P*(1+i)^n + PMT*[( (1+i)^n -1 )/i]
+      const montanteP = P * Math.pow(1 + taxaMensal, meses);
+      const montantePMT = PMT * ((Math.pow(1 + taxaMensal, meses) - 1) / taxaMensal);
+      const montanteTotal = montanteP + montantePMT;
+
+      const totalInvestido = P + PMT * meses;
+      const rendimento = montanteTotal - totalInvestido;
+
+      const resultado = `
+        <p>💰 <strong>Valor acumulado na aposentadoria:</strong> R$ ${montanteTotal.toFixed(2)}</p>
+        <p>💸 <strong>Total investido:</strong> R$ ${totalInvestido.toFixed(2)}</p>
+        <p>📈 <strong>Rendimento acumulado:</strong> R$ ${rendimento.toFixed(2)}</p>
+      `;
+
+      document.getElementById('resultado').innerHTML = resultado;
+    }
+  </script>
+</body>
+</html>
