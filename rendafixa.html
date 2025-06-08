@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Finanças em Tempo Real</title>
+  <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon">
+  <style>
+    :root {
+      --primary: #1f2937;
+      --secondary: #111827;
+      --accent: #3b82f6;
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background-color: var(--primary);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: white;
+      font-size: 1.8rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: var(--accent);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .column {
+      flex: 1;
+      min-width: 300px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      font-weight: bold;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .info {
+      font-size: 0.9rem;
+      margin-top: 10px;
+      color: #6b7280;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--secondary);
+      color: #cbd5e1;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Economista de Bolso</h1>
+    <nav>
+      <a href="acoes.html">Ações EUA</a>
+      <a href="cript.html">Cripto</a>
+      <a href="juros.html">Calculadora de Juros Compostos</a>
+      <a href="aposentar.html">Calculadora de Aposentadoria</a>
+      <a href="parecelas.html">Calculadora de parcelas</a>
+      <a href="rendafixa.html">Renda fixa</a>
+      <a href="https://economistadebolso.blogspot.com/">Nosso Blog</a>
+    </nav>
+  </header>
+
+<div class="container">
+    <h1>Comparador de Renda Fixa</h1>
+    <div class="row">
+      <div class="column">
+        <label for="tipo1">Qual é o tipo de investimento?</label>
+        <select id="tipo1">
+          <option value="">Selecione o tipo</option>
+          <option value="cdb">CDB</option>
+          <option value="lc">LC</option>
+          <option value="tesouro">Tesouro Direto</option>
+        </select>
+
+        <label>Rentabilidade</label>
+        <select id="tipoRent1">
+          <option value="pre">Pré-fixado</option>
+          <option value="cdi">% do CDI</option>
+          <option value="ipca">Taxa fixa + IPCA</option>
+        </select>
+
+        <label>Valor da rentabilidade (%)</label>
+        <input id="rent1" type="number" value="100">
+
+        <label>Tempo de investimento (meses)</label>
+        <input id="tempo1" type="number" value="12">
+      </div>
+
+      <div class="column">
+        <label for="tipo2">Você quer comparar com:</label>
+        <select id="tipo2">
+          <option value="">Selecione o tipo</option>
+          <option value="cdb">CDB</option>
+          <option value="lc">LC</option>
+          <option value="tesouro">Tesouro Direto</option>
+        </select>
+
+        <label>Rentabilidade</label>
+        <select id="tipoRent2">
+          <option value="pre">Pré-fixado</option>
+          <option value="cdi">% do CDI</option>
+          <option value="ipca">Taxa fixa + IPCA</option>
+        </select>
+
+        <label>Valor da rentabilidade (%)</label>
+        <input id="rent2" type="number" value="100">
+
+        <label>Tempo de investimento (meses)</label>
+        <input id="tempo2" type="number" value="12">
+      </div>
+    </div>
+    <button onclick="calcularInvestimentos()">Calcular</button>
+    <div id="resultado" class="result"></div>
+    <div class="info">Valores base utilizados: CDI 14.65%, IPCA 4.5%</div>
+  </div>
+
+        <div class="container">
+       <p><strong>Os dados apresentados são apenas estimativas, não nos responsabilizamos por alterações ou por taixas não informadas. </strong>
+          <br>Verifique os contratos com sua corretora ou banco.</p>
+      </div>
+  </main>
+
+  <footer>
+    © 2025 Economista de Bolso - Todos os direitos reservados.
+  </footer>
+
+  <script>
+    const CDI = 14.65;
+    const IPCA = 4.5;
+    const imposto = 0.15;
+
+    function calcularRendimento(tipoRent, rent, meses) {
+      let taxa = 0;
+      if (tipoRent === 'pre') taxa = rent;
+      else if (tipoRent === 'cdi') taxa = (rent / 100) * CDI;
+      else if (tipoRent === 'ipca') taxa = rent + IPCA;
+
+      let bruto = Math.pow(1 + (taxa / 100) / 12, meses);
+      let liquido = bruto * (1 - imposto);
+      return { bruto: bruto.toFixed(4), liquido: liquido.toFixed(4), taxa: taxa.toFixed(2) };
+    }
+
+    function calcularInvestimentos() {
+      const tipoRent1 = document.getElementById("tipoRent1").value;
+      const rent1 = parseFloat(document.getElementById("rent1").value);
+      const tempo1 = parseInt(document.getElementById("tempo1").value);
+      const res1 = calcularRendimento(tipoRent1, rent1, tempo1);
+
+      const tipoRent2 = document.getElementById("tipoRent2").value;
+      const rent2 = parseFloat(document.getElementById("rent2").value);
+      const tempo2 = parseInt(document.getElementById("tempo2").value);
+      const res2 = calcularRendimento(tipoRent2, rent2, tempo2);
+
+      document.getElementById("resultado").innerHTML = `
+        <p><strong>Investimento 1:</strong> Rentabilidade efetiva: ${res1.taxa}% a.a | Bruto: ${(res1.bruto * 100).toFixed(2)}% | Líquido: ${(res1.liquido * 100).toFixed(2)}%</p>
+        <p><strong>Investimento 2:</strong> Rentabilidade efetiva: ${res2.taxa}% a.a | Bruto: ${(res2.bruto * 100).toFixed(2)}% | Líquido: ${(res2.liquido * 100).toFixed(2)}%</p>
+      `;
+    }
+  </script>
+
+</body>
+</html>
