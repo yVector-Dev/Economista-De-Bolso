@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Calculadora de Juros Compostos com Comparação</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary: #1f2937;
+      --secondary: #111827;
+      --accent: #3b82f6;
+      --bg: #f9fafb;
+      --card-bg: #ffffff;
+      --text: #1f2937;
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    header {
+      background-color: var(--primary);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      color: white;
+      font-size: 1.8rem;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin-left: 20px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: var(--accent);
+    }
+    main {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      padding: 25px;
+      margin-bottom: 30px;
+    }
+    .card h2 {
+      margin-bottom: 20px;
+      color: var(--primary);
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 5px;
+      font-weight: 600;
+    }
+    input,
+    select {
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      outline: none;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2563eb;
+    }
+    .result {
+      margin-top: 15px;
+      font-weight: bold;
+      color: var(--primary);
+      line-height: 1.6;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: var(--secondary);
+      color: #cbd5e1;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>Economista de Bolso</h1>
+    <nav>
+      <a href="acoes.html">Ações EUA</a>
+      <a href="cript.html">Cripto</a>
+      <a href="index.html">Conversor</a>
+      <a href="aposentar.html">Calculadora de Aposentadoria</a>
+      <a href="parecelas.html">Calculadora de parcelas</a>
+      <a href="rendafixa.html">Renda fixa</a>
+      <a href="https://economistadebolso.blogspot.com/">Nosso Blog</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>Simule seu Investimento</h2>
+
+      <label>Valor Inicial (R$):</label>
+      <input type="number" id="valorInicial" placeholder="Ex.: 1000" step="any" />
+
+      <label>Aporte Periódico (R$):</label>
+      <input type="number" id="valorMensal" placeholder="Ex.: 500" step="any" />
+
+      <label>Taxa do seu investimento (% ao período):</label>
+      <input type="number" id="taxa" placeholder="Ex.: 1" step="any" />
+
+      <label>Período:</label>
+      <input type="number" id="periodo" placeholder="Ex.: 12" />
+
+      <label>Frequência:</label>
+      <select id="frequencia">
+        <option value="mensal" selected>Mensal</option>
+        <option value="anual">Anual</option>
+        <option value="diario">Diário</option>
+      </select>
+
+      <label>Taxa CDI anual (%):</label>
+      <input type="number" id="taxaCdi" placeholder="Ex.: 13.65" step="any" value="13.65" />
+
+      <label>Taxa Ibovespa anual (%):</label>
+      <input type="number" id="taxaIbov" placeholder="Ex.: 10" step="any" value="10" />
+
+      <label>Inflação anual (%):</label>
+      <input type="number" id="inflacao" placeholder="Ex.: 4" step="any" />
+
+      <label>Imposto (% sobre lucro):</label>
+      <input type="number" id="imposto" placeholder="Ex.: 15" step="any" />
+
+      <button onclick="calcular()">Calcular</button>
+
+      <div class="result" id="result"></div>
+    </div>
+
+    <div class="card">
+      <h2>Evolução do Investimento</h2>
+      <canvas id="grafico"></canvas>
+    </div>
+
+    <div class="card">
+      <p><strong>Os dados apresentados são apenas estimativas, não nos responsabilizamos por alterações ou por taixas não informadas. </strong>
+        <br>Verifique os contratos com sua corretora ou banco.</p>
+    </div>
+  </main>
+
+  <footer>
+    © 2025 Economista de Bolso - Todos os direitos reservados.
+  </footer>
+
+  <script>
+    let grafico;
+
+    function calcular() {
+      // Inputs
+      const P = parseFloat(document.getElementById('valorInicial').value) || 0;
+      const PMT = parseFloat(document.getElementById('valorMensal').value) || 0;
+      const taxa = (parseFloat(document.getElementById('taxa').value) || 0) / 100;
+      const n = parseInt(document.getElementById('periodo').value) || 0;
+      const freq = document.getElementById('frequencia').value;
+      const taxaCdiAnual = (parseFloat(document.getElementById('taxaCdi').value) || 0) / 100;
+      const taxaIbovAnual = (parseFloat(document.getElementById('taxaIbov').value) || 0) / 100;
+      const inflacaoAnual = (parseFloat(document.getElementById('inflacao').value) || 0) / 100;
+      const impostoPerc = (parseFloat(document.getElementById('imposto').value) || 0) / 100;
+
+      // Ajuste de taxa e períodos conforme frequência
+      let periodoTotal;
+      let i;
+
+      if (freq === 'mensal') {
+        periodoTotal = n;
+        i = taxa;
+      } else if (freq === 'anual') {
+        periodoTotal = n;
+        i = taxa;
+      } else if (freq === 'diario') {
+        periodoTotal = n;
+        i = taxa;
+      }
+
+      // Função para calcular montante com juros compostos e aportes
+      function calculaMontante(periodos, taxaPeriodo, principal, aporte) {
+        let montante = principal;
+        const resultados = [];
+        for (let k = 1; k <= periodos; k++) {
+          montante = montante * (1 + taxaPeriodo) + aporte;
+          resultados.push(montante);
+        }
+        return resultados;
+      }
+
+      // Seu investimento
+      const dadosInvest = calculaMontante(periodoTotal, i, P, PMT);
+
+      // CDI e Ibovespa convertidos para mesma frequência
+      let taxaCdiPeriodo, taxaIbovPeriodo, inflacaoPeriodo;
+      if (freq === 'anual') {
+        taxaCdiPeriodo = taxaCdiAnual;
+        taxaIbovPeriodo = taxaIbovAnual;
+        inflacaoPeriodo = inflacaoAnual;
+      } else if (freq === 'mensal') {
+        taxaCdiPeriodo = Math.pow(1 + taxaCdiAnual, 1 / 12) - 1;
+        taxaIbovPeriodo = Math.pow(1 + taxaIbovAnual, 1 / 12) - 1;
+        inflacaoPeriodo = Math.pow(1 + inflacaoAnual, 1 / 12) - 1;
+      } else if (freq === 'diario') {
+        taxaCdiPeriodo = Math.pow(1 + taxaCdiAnual, 1 / 252) - 1;
+        taxaIbovPeriodo = Math.pow(1 + taxaIbovAnual, 1 / 252) - 1;
+        inflacaoPeriodo = Math.pow(1 + inflacaoAnual, 1 / 252) - 1;
+      }
+
+      const dadosCdi = calculaMontante(periodoTotal, taxaCdiPeriodo, P, PMT);
+      const dadosIbov = calculaMontante(periodoTotal, taxaIbovPeriodo, P, PMT);
+
+      // Total investido
+      const totalAportes = P + PMT * periodoTotal;
+
+      // Cálculos para seu investimento
+      const montanteFinal = dadosInvest[dadosInvest.length - 1];
+      const rendimentoBruto = montanteFinal - totalAportes;
+      const imposto = rendimentoBruto * impostoPerc;
+      const montantePosImposto = montanteFinal - imposto;
+      const montanteReal = montantePosImposto / Math.pow(1 + inflacaoPeriodo, periodoTotal);
+
+      // Mostrar resultados
+      document.getElementById('result').innerHTML = `
+        <p>💰 <strong>Valor Futuro Bruto:</strong> R$ ${montanteFinal.toFixed(2)}</p>
+        <p>💸 <strong>Total Investido:</strong> R$ ${totalAportes.toFixed(2)}</p>
+        <p>📈 <strong>Rendimentos Brutos:</strong> R$ ${rendimentoBruto.toFixed(2)}</p>
+        <p>🧾 <strong>Imposto:</strong> R$ ${imposto.toFixed(2)}</p>
+        <p>📉 <strong>Desconto pela Inflação:</strong> ${(inflacaoPeriodo * 100 * periodoTotal).toFixed(2)}%</p>
+        <hr />
+        <p>🏆 <strong>Valor Líquido Real:</strong> R$ ${montanteReal.toFixed(2)}</p>
+      `;
+
+      // Labels para gráfico
+      const labels = [];
+      for (let k = 1; k <= periodoTotal; k++) {
+        labels.push(
+          `${k}º ${
+            freq === 'anual' ? 'ano' : freq === 'mensal' ? 'mês' : 'dia'
+          }`
+        );
+      }
+
+      // Destrói gráfico anterior se houver
+      const ctx = document.getElementById('grafico').getContext('2d');
+      if (grafico) grafico.destroy();
+
+      // Cria novo gráfico com 3 linhas
+      grafico = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Seu Investimento',
+              data: dadosInvest.map((v) => v.toFixed(2)),
+              borderColor: '#3b82f6',
+              backgroundColor: 'rgba(59, 130, 246, 0.1)',
+              fill: true,
+              tension: 0.3,
+            },
+            {
+              label: 'CDI',
+              data: dadosCdi.map((v) => v.toFixed(2)),
+              borderColor: '#10b981',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              fill: true,
+              tension: 0.3,
+            },
+            {
+              label: 'Ibovespa',
+              data: dadosIbov.map((v) => v.toFixed(2)),
+              borderColor: '#ef4444',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              fill: true,
+              tension: 0.3,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false,
+          },
+          stacked: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Comparação entre seu investimento, CDI e Ibovespa',
+              font: { size: 18 },
+            },
+            legend: {
+              labels: { font: { size: 14 } },
+            },
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: { callback: (val) => `R$ ${val}` },
+              title: { display: true, text: 'Valor acumulado' },
+            },
+            x: {
+              title: { display: true, text: 'Período' },
+            },
+          },
+        },
+      });
+    }
+  </script>
+</body>
+</html>
